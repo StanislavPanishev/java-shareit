@@ -18,10 +18,11 @@ import java.util.List;
 @RequestMapping("/items")
 public class ItemController {
     private final ItemService service;
+    private static final String REQUEST_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemDto create(@RequestHeader(REQUEST_HEADER) Long userId,
                           @Valid @RequestBody ItemDto itemDto) {
         log.info("Получен HTTP-запрос по адресу /items (метод POST). "
                 + "Вызван метод create()");
@@ -37,7 +38,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItems(@RequestHeader("X-Sharer-User-Id") Long id) {
+    public List<ItemDto> getAllItems(@RequestHeader(REQUEST_HEADER) Long id) {
         List<ItemDto> items = service.getAll(id);
         log.info("Получен HTTP-запрос по адресу /items (метод GET). "
                 + "Вызван метод getAll(id)");
@@ -45,7 +46,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemDto updateItem(@RequestHeader(REQUEST_HEADER) Long userId,
                               @RequestBody ItemDto itemDto,
                               @PathVariable Long itemId) {
 
