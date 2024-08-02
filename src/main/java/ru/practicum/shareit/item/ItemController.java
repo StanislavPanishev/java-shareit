@@ -3,15 +3,14 @@ package ru.practicum.shareit.item;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemInfoDto;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -21,7 +20,6 @@ public class ItemController {
     private static final String REQUEST_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ItemDto create(@RequestHeader(REQUEST_HEADER) Long userId,
                           @Valid @RequestBody ItemDto itemDto) {
         log.info("Получен HTTP-запрос по адресу /items (метод POST). "
@@ -29,19 +27,20 @@ public class ItemController {
         return service.create(userId, itemDto);
     }
 
-    @GetMapping("{id}")
-    public ItemDto getForId(@PathVariable Long id) {
-        ItemDto item = service.getById(id);
-        log.info("Получен HTTP-запрос по адресу /items/{id} (метод GET). "
-                + "Вызван метод getById(id)");
+    @GetMapping("{itemId}")
+    public ItemInfoDto getById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                               @PathVariable Long itemId) {
+        ItemInfoDto item = service.findItemById(userId, itemId);
+        log.info("Получен HTTP-запрос по адресу /items/{itemId} (метод GET). "
+                + "Вызван метод findItemById(userId, itemId);");
         return item;
     }
 
     @GetMapping
-    public List<ItemDto> getAllItems(@RequestHeader(REQUEST_HEADER) Long id) {
-        List<ItemDto> items = service.getAll(id);
+    public List<ItemInfoDto> getAllItems(@RequestHeader(REQUEST_HEADER) Long id) {
+        List<ItemInfoDto> items = service.findItemsByUserId(id);
         log.info("Получен HTTP-запрос по адресу /items (метод GET). "
-                + "Вызван метод getAll(id)");
+                + "Вызван метод findItemsByUserId(id)");
         return items;
     }
 
@@ -49,12 +48,24 @@ public class ItemController {
     public ItemDto updateItem(@RequestHeader(REQUEST_HEADER) Long userId,
                               @RequestBody ItemDto itemDto,
                               @PathVariable Long itemId) {
-
+        log.info("Получен HTTP-запрос по адресу /{itemId} (метод PATCH). "
+                + "Вызван метод update(userId, itemDto, itemId)");
         return service.update(userId, itemDto, itemId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchByNameOrDesc(@RequestParam("text") String text) {
-        return service.search(text);
+        log.info("Получен HTTP-запрос по адресу /search (метод GET). "
+                + "Вызван метод findItemsByText(text)");
+        return service.findItemsByText(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                 @PathVariable Long itemId,
+                                 @RequestBody CommentRequestDto commentRequestDto) {
+        log.info("Получен HTTP-запрос по адресу /{itemId}/comment (метод POST). "
+                + "Вызван метод addComment(userId, itemId, commentRequestDto)");
+        return service.addComment(userId, itemId, commentRequestDto);
     }
 }
