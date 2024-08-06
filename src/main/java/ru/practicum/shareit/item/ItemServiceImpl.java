@@ -43,7 +43,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(Long userId, ItemDto itemDto) {
-        validation(userId, null);
         return ItemMapper.toItemDto(itemRepository.save(
                 Item.builder()
                         .name(itemDto.getName())
@@ -135,9 +134,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void validation(Long userId, Long itemId) {
-        if (userId == null) {
-            throw new ValidationException("Owner id not specified!");
-        }
+
         if (itemId != null && !(Objects.equals(Objects.requireNonNull(itemRepository.findById(itemId).orElse(null)).getOwner().getId(), userId))) {
             throw new NotFoundException("Only the owner can edit an item!");
         }

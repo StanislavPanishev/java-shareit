@@ -137,12 +137,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private void validate(Long userId, BookingRequestDto bookingRequestDto) {
-        if (bookingRequestDto.getEnd() == null) {
-            throw new ValidationException("End date is null!");
-        }
-        if (bookingRequestDto.getStart() == null) {
-            throw new ValidationException("Start date is null!");
-        }
         if (bookingRequestDto.getEnd().isBefore(LocalDateTime.now())) {
             throw new ValidationException("End date before now!");
         }
