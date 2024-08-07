@@ -3,15 +3,11 @@ package ru.practicum.shareit.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +16,6 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(@Valid @RequestBody UserDto userDto) {
         log.info("Получен HTTP-запрос по адресу /users (метод POST). "
                 + "Вызван метод create(@Valid @RequestBody UserDto userDto)");
@@ -37,7 +32,7 @@ public class UserController {
     @GetMapping
     public List<UserDto> findAll() {
         log.info("Получен HTTP-запрос по адресу /users (метод GET). Вызван метод getAll()");
-        return userService.getAll();
+        return userService.findAll();
     }
 
     @PatchMapping("/{userId}")
