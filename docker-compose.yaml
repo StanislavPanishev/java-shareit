@@ -1,40 +1,35 @@
 services:
-  gateway:
-    build: gateway
-    image: shareit-gateway
-    container_name: shareit-gateway
-    ports:
-      - "8080:8080"
-    depends_on:
-      - server
-    environment:
-      - SHAREIT_SERVER_URL=http://server:9090
-      - TZ=Europe/Moscow
-
   server:
-    build: server
-    image: shareit-server
-    container_name: shareit-server
+    build: ./server
+    container_name: server
     ports:
       - "9090:9090"
     depends_on:
       - db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
-      - SPRING_DATASOURCE_USERNAME=shareit
-      - SPRING_DATASOURCE_PASSWORD=shareit
-      - TZ=Europe/Moscow
+      - SPRING_DATASOURCE_USERNAME=dbuser
+      - SPRING_DATASOURCE_PASSWORD=12345
+
+  gateway:
+    build: ./gateway
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - server
+    environment:
+      - SHAREIT_SERVER_URL=http://server:9090
 
   db:
-    image: postgres:16.1
-    container_name: postgres
+    image: postgres:16.3
+    container_name: shareit-db
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=shareit
-      - POSTGRES_USER=shareit
       - POSTGRES_DB=shareit
-      - TZ=Europe/Moscow
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=12345
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
